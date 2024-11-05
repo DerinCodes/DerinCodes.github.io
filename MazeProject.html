@@ -1,0 +1,156 @@
+<!DOCTYPE HTML>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <title>Maze Generation Algorithms</title>
+    <link rel="stylesheet" href="assets/css/main.css">
+    <noscript><link rel="stylesheet" href="assets/css/noscript.css"></noscript>
+    <style>
+        /* Custom styling for code blocks */
+        .code-snippet {
+            background-color: #2f3843;
+            border-left: 4px solid #124e65;
+            padding: 10px;
+            margin: 20px 0;
+            font-family: monospace;
+            white-space: pre-wrap;
+            overflow-x: auto;
+            line-height: 1.5em;
+            color: #f8f8f2;
+        }
+        h1, h2, h3 {
+            font-family: Arial, sans-serif;
+        }
+    </style>
+</head>
+<body class="is-preload">
+    <!-- Wrapper -->
+    <div id="wrapper">
+        <!-- Header -->
+        <header id="header">
+            <div class="inner">
+                <!-- Logo -->
+                <a href="index.html" class="logo">
+                    <span class="symbol"><img src="images/logo.svg" alt="" /></span><span class="title">DK</span>
+                </a>
+
+                <!-- Nav -->
+                <nav>
+                    <ul>
+                        <li><a href="#menu">Menu</a></li>
+                    </ul>
+                </nav>
+            </div>
+        </header>
+
+        <!-- Menu -->
+        <nav id="menu">
+            <h2>Menu</h2>
+            <ul>
+                <li><a href="index.html">About Me</a></li>
+                <li><a href="generic.html">Projects</a></li>
+                <li><a href="generic.html">Contacts</a></li>
+            </ul>
+        </nav>
+
+        <!-- Main Content -->
+        <div id="main">
+            <div class="inner">
+                <!-- Project Title and Description -->
+                <section>
+                    <h1>Maze Generation Algorithms</h1>
+                    <p>This page explores four maze generation algorithms—Depth-First Search, Prim’s Algorithm, Kruskal’s Algorithm, and Recursive Division—highlighting their pros and cons, code snippets, and an example maze image.</p>
+                </section>
+
+                <!-- Algorithms Breakdown -->
+                <section>
+                    <!-- Depth-First Search -->
+                    <h2>Depth-First Search (DFS)</h2>
+                    <p>DFS is a backtracking algorithm that creates a maze by starting at a cell and exploring as far as possible along each branch before backtracking.</p>
+                    <p><strong>Pros:</strong> Fast, simple, generates mazes with long, winding passages.<br>
+                       <strong>Cons:</strong> Can result in very few junctions or dead ends.</p>
+                    <div class="code-snippet">
+                        void DFS(Vector2Int cell) {<br>
+                        &nbsp;&nbsp;visited[cell.x, cell.y] = true;<br>
+                        &nbsp;&nbsp;foreach (Vector2Int dir in directions) {<br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;if (IsValidMove(cell + dir)) DFS(cell + dir);<br>
+                        &nbsp;&nbsp;}<br>
+                        }
+                    </div>
+
+                    <!-- Prim's Algorithm -->
+                    <h2>Prim’s Algorithm</h2>
+                    <p>Prim's Algorithm grows a maze by randomly connecting frontier cells to already visited cells in the maze.</p>
+                    <p><strong>Pros:</strong> Creates balanced mazes with a mix of short and long paths.<br>
+                       <strong>Cons:</strong> Can generate short, cul-de-sac-filled mazes that are more predictable.</p>
+                    <div class="code-snippet">
+                        void GenerateMaze() {<br>
+                        &nbsp;&nbsp;MarkInMaze(start);<br>
+                        &nbsp;&nbsp;while (!frontier.empty()) {<br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;Vector2Int cell = GetRandomFrontierCell();<br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;ConnectToMaze(cell);<br>
+                        &nbsp;&nbsp;}<br>
+                        }
+                    </div>
+
+                    <!-- Kruskal's Algorithm -->
+                    <h2>Kruskal’s Algorithm</h2>
+                    <p>Kruskal’s algorithm connects random walls between unconnected cells to build a spanning tree of paths across the maze.</p>
+                    <p><strong>Pros:</strong> Generates a fully connected maze with diverse path lengths.<br>
+                       <strong>Cons:</strong> Can be computationally expensive for large mazes.</p>
+                    <div class="code-snippet">
+                        void KruskalsMaze() {<br>
+                        &nbsp;&nbsp;foreach (Wall wall in randomWalls) {<br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;if (ConnectsDisjointSets(wall)) RemoveWall(wall);<br>
+                        &nbsp;&nbsp;}<br>
+                        }
+                    </div>
+
+                    <!-- Recursive Division -->
+                    <h2>Recursive Division</h2>
+                    <p>Recursive Division divides the maze area with walls and randomly placed openings, creating a maze with large sections.</p>
+                    <p><strong>Pros:</strong> Creates visually distinct mazes with large open sections.<br>
+                       <strong>Cons:</strong> Can result in overly open spaces or large isolated sections.</p>
+                    <div class="code-snippet">
+                        void Divide(int x, int y, int width, int height) {<br>
+                        &nbsp;&nbsp;if (width <= 2 || height <= 2) return;<br>
+                        &nbsp;&nbsp;AddWall(x, y, width, height);<br>
+                        &nbsp;&nbsp;Divide(newArea1); Divide(newArea2);<br>
+                        }
+                    </div>
+                </section>
+                
+                <!-- Maze Example Image -->
+                <section>
+                    <h2>Maze Example</h2>
+                    <p>The following image shows a sample maze generated using one of the algorithms discussed above:</p>
+                    <img src="images/maze_example.png" alt="Maze Example" style="width:100%; height:auto;">
+                </section>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <footer id="footer">
+            <div class="inner">
+                <section>
+                    <h2>Contacts</h2>
+                    <ul class="icons">
+                        <li><a href="https://github.com/DerinCodes" class="icon brands style2 fa-github" target="_blank"><span class="label">GitHub</span></a></li>
+                        <li><a href="https://www.linkedin.com/in/derin-k-38616010b/" class="icon brands style2 fa-linkedin" target="_blank"><span class="label">LinkedIn</span></a></li>
+                        <li><a href="#" class="icon solid style2 fa-phone"><span class="label">Phone</span></a></li>
+                        <li><a href="#" class="icon solid style2 fa-envelope"><span class="label">Email</span></a></li>
+                    </ul>
+                </section>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Scripts -->
+    <script src="assets/js/jquery.min.js"></script>
+    <script src="assets/js/browser.min.js"></script>
+    <script src="assets/js/breakpoints.min.js"></script>
+    <script src="assets/js/util.js"></script>
+    <script src="assets/js/main.js"></script>
+</body>
+</html>
