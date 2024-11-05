@@ -67,56 +67,63 @@
                 <section>
                     <!-- Depth-First Search -->
                     <h2>Depth-First Search (DFS)</h2>
-                    <p>DFS is a backtracking algorithm that creates a maze by starting at a cell and exploring as far as possible along each branch before backtracking.</p>
-                    <p><strong>Pros:</strong> Fast, simple, generates mazes with long, winding passages.<br>
-                       <strong>Cons:</strong> Can result in very few junctions or dead ends.</p>
+                    <p>DFS explores each cell as far as possible along each path before backtracking. It creates mazes with winding passages.</p>
+                    <p><strong>Pros:</strong> Simple, efficient for dense mazes.<br>
+                       <strong>Cons:</strong> Few junctions, often produces dead ends.</p>
                     <div class="code-snippet">
-                        void DFS(Vector2Int cell) {<br>
-                        &nbsp;&nbsp;visited[cell.x, cell.y] = true;<br>
-                        &nbsp;&nbsp;foreach (Vector2Int dir in directions) {<br>
-                        &nbsp;&nbsp;&nbsp;&nbsp;if (IsValidMove(cell + dir)) DFS(cell + dir);<br>
-                        &nbsp;&nbsp;}<br>
+                        // Start DFS from a random cell<br>
+                        DFS(start) {<br>
+                        &nbsp;&nbsp;mark cell as visited;<br>
+                        &nbsp;&nbsp;for each neighbor in random order:<br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;if neighbor not visited:<br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;DFS(neighbor);<br>
                         }
                     </div>
 
                     <!-- Prim's Algorithm -->
                     <h2>Prim’s Algorithm</h2>
-                    <p>Prim's Algorithm grows a maze by randomly connecting frontier cells to already visited cells in the maze.</p>
-                    <p><strong>Pros:</strong> Creates balanced mazes with a mix of short and long paths.<br>
-                       <strong>Cons:</strong> Can generate short, cul-de-sac-filled mazes that are more predictable.</p>
+                    <p>Prim's Algorithm grows the maze by expanding a frontier, creating short, balanced pathways.</p>
+                    <p><strong>Pros:</strong> Great balance of short and long paths.<br>
+                       <strong>Cons:</strong> Can produce predictable structures with short dead ends.</p>
                     <div class="code-snippet">
-                        void GenerateMaze() {<br>
-                        &nbsp;&nbsp;MarkInMaze(start);<br>
-                        &nbsp;&nbsp;while (!frontier.empty()) {<br>
-                        &nbsp;&nbsp;&nbsp;&nbsp;Vector2Int cell = GetRandomFrontierCell();<br>
-                        &nbsp;&nbsp;&nbsp;&nbsp;ConnectToMaze(cell);<br>
-                        &nbsp;&nbsp;}<br>
+                        // Initialize with a random start cell<br>
+                        Prim(start) {<br>
+                        &nbsp;&nbsp;mark cell as "in maze";<br>
+                        &nbsp;&nbsp;add all neighboring cells to frontier;<br>
+                        &nbsp;&nbsp;while frontier not empty:<br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;pick random frontier cell;<br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;connect to random "in maze" neighbor;<br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;mark cell, add neighbors to frontier;<br>
                         }
                     </div>
 
                     <!-- Kruskal's Algorithm -->
                     <h2>Kruskal’s Algorithm</h2>
-                    <p>Kruskal’s algorithm connects random walls between unconnected cells to build a spanning tree of paths across the maze.</p>
-                    <p><strong>Pros:</strong> Generates a fully connected maze with diverse path lengths.<br>
-                       <strong>Cons:</strong> Can be computationally expensive for large mazes.</p>
+                    <p>Kruskal’s randomly connects walls between disjoint cells to form a single connected maze.</p>
+                    <p><strong>Pros:</strong> Generates highly connected mazes with diverse paths.<br>
+                       <strong>Cons:</strong> Memory-intensive for large grids.</p>
                     <div class="code-snippet">
-                        void KruskalsMaze() {<br>
-                        &nbsp;&nbsp;foreach (Wall wall in randomWalls) {<br>
-                        &nbsp;&nbsp;&nbsp;&nbsp;if (ConnectsDisjointSets(wall)) RemoveWall(wall);<br>
-                        &nbsp;&nbsp;}<br>
+                        // Randomly join sets by removing walls<br>
+                        Kruskal() {<br>
+                        &nbsp;&nbsp;initialize each cell as its own set;<br>
+                        &nbsp;&nbsp;for each random wall between cells:<br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;if cells are in different sets:<br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;remove wall, merge sets;<br>
                         }
                     </div>
 
                     <!-- Recursive Division -->
                     <h2>Recursive Division</h2>
-                    <p>Recursive Division divides the maze area with walls and randomly placed openings, creating a maze with large sections.</p>
-                    <p><strong>Pros:</strong> Creates visually distinct mazes with large open sections.<br>
-                       <strong>Cons:</strong> Can result in overly open spaces or large isolated sections.</p>
+                    <p>Recursive Division divides the grid with walls and openings, creating large sections within the maze.</p>
+                    <p><strong>Pros:</strong> Visually unique mazes with large open spaces.<br>
+                       <strong>Cons:</strong> Can produce isolated areas if not careful.</p>
                     <div class="code-snippet">
-                        void Divide(int x, int y, int width, int height) {<br>
-                        &nbsp;&nbsp;if (width <= 2 || height <= 2) return;<br>
-                        &nbsp;&nbsp;AddWall(x, y, width, height);<br>
-                        &nbsp;&nbsp;Divide(newArea1); Divide(newArea2);<br>
+                        // Recursively divide the grid<br>
+                        Divide(x, y, width, height) {<br>
+                        &nbsp;&nbsp;if area too small return;<br>
+                        &nbsp;&nbsp;place wall across width or height;<br>
+                        &nbsp;&nbsp;create random opening in wall;<br>
+                        &nbsp;&nbsp;recursively divide each section;<br>
                         }
                     </div>
                 </section>
