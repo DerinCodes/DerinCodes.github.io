@@ -1,0 +1,170 @@
+<!DOCTYPE HTML>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <title>Digit Classification using Neural Network</title>
+    <link rel="stylesheet" href="assets/css/main.css">
+    <noscript><link rel="stylesheet" href="assets/css/noscript.css"></noscript>
+    <style>
+        /* Custom styling for code blocks */
+        .code-snippet {
+            background-color: #2f3843;
+            border-left: 4px solid #124e65;
+            padding: 5px;
+            margin: 20px 0;
+            font-family: monospace;
+            white-space: pre-wrap;
+            overflow-x: auto;
+            line-height: .75em; /* Reduced line spacing */
+        }
+        h1, h2, h3 {
+            font-family: Arial, sans-serif;
+        }
+    </style>
+</head>
+<body class="is-preload">
+    <!-- Wrapper -->
+    <div id="wrapper">
+        <!-- Header -->
+        <header id="header">
+            <div class="inner">
+                <!-- Logo -->
+                <a href="index.html" class="logo">
+                    <span class="symbol"><img src="images/logo.svg" alt="" /></span><span class="title">DK</span>
+                </a>
+
+                <!-- Nav -->
+                <nav>
+                    <ul>
+                        <li><a href="#menu">Menu</a></li>
+                    </ul>
+                </nav>
+            </div>
+        </header>
+
+        <!-- Menu -->
+        <nav id="menu">
+            <h2>Menu</h2>
+            <ul>
+                <li><a href="index.html">About Me</a></li>
+                <li><a href="generic.html">Projects</a></li>
+                <li><a href="generic.html">Contacts</a></li>
+            </ul>
+        </nav>
+
+        <!-- Main Content -->
+        <div id="main">
+            <div class="inner">
+                <!-- Project Title and Description -->
+                <section>
+                    <h1>Digit Classification using Neural Network</h1>
+                    <p>This project trains a neural network to classify handwritten digits (1, 2, and 3) from the MNIST dataset. The process involves filtering the data for these digits, normalizing the images, and using k-fold cross-validation for evaluation. The model learns using softmax activation and cross-entropy loss.</p>
+                </section>
+
+                <!-- Code Breakdown -->
+                <section>
+                    <!-- Data Preprocessing -->
+                    <h3>1. Data Preprocessing</h3>
+                    <p>Load the MNIST dataset, filter it for digits 1, 2, and 3, and normalize the pixel values. The labels are one-hot encoded for training.</p>
+                    <div class="code-snippet">
+                        (train_images, train_labels), (test_images, test_labels) = mnist.load_data()<br>
+                        train_filter = np.where((train_labels == 1) | (train_labels == 2) | (train_labels == 3))<br>
+                        test_filter = np.where((test_labels == 1) | (test_labels == 2) | (test_labels == 3))<br>
+                        train_images, train_labels = train_images[train_filter], train_labels[train_filter]<br>
+                        test_images, test_labels = test_images[test_filter], test_labels[test_filter]<br><br>
+                        def one_hot_encode(labels):<br>
+                        &nbsp;&nbsp;one_hot = np.zeros((labels.shape[0], 3))<br>
+                        &nbsp;&nbsp;for i in range(labels.shape[0]):<br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;if labels[i] == 1:<br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;one_hot[i, 0] = 1<br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;elif labels[i] == 2:<br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;one_hot[i, 1] = 1<br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;elif labels[i] == 3:<br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;one_hot[i, 2] = 1<br>
+                        &nbsp;&nbsp;return one_hot
+                    </div>
+
+                    <!-- Neural Network Training -->
+                    <h3>2. Neural Network Training</h3>
+                    <p>The <code>train</code> function iterates over epochs, computes predictions with softmax, calculates cross-entropy loss, performs backpropagation, and updates weights and biases.</p>
+                    <div class="code-snippet">
+                        def train(train_images, train_labels, weights, biases, epochs=50, learning_rate=0.1):<br>
+                        &nbsp;&nbsp;for epoch in range(epochs):<br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;for i in range(train_images.shape[0]):<br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;image = train_images[i].reshape(1, -1)<br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;label = train_labels[i].reshape(1, -1)<br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;logits = np.dot(image, weights) + biases<br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;probs = softmax(logits)<br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;loss = cross_entropy_loss(label, probs)<br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;grad_logits = probs - label<br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;weights -= learning_rate * np.dot(image.T, grad_logits)<br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;biases -= learning_rate * grad_logits.squeeze()
+                    </div>
+
+                    <!-- Evaluation Function -->
+                    <h3>3. Model Evaluation</h3>
+                    <p>The <code>evaluate</code> function calculates model accuracy by comparing predicted and true labels on a test dataset.</p>
+                    <div class="code-snippet">
+                        def evaluate(test_images, test_labels, weights, biases):<br>
+                        &nbsp;&nbsp;logits = np.dot(test_images, weights) + biases<br>
+                        &nbsp;&nbsp;probs = softmax(logits)<br>
+                        &nbsp;&nbsp;predictions = np.argmax(probs, axis=1)<br>
+                        &nbsp;&nbsp;true_labels = np.argmax(test_labels, axis=1)<br>
+                        &nbsp;&nbsp;accuracy = np.mean(predictions == true_labels)<br>
+                        &nbsp;&nbsp;return accuracy
+                    </div>
+
+                    <!-- Cross-Validation -->
+                    <h3>4. K-Fold Cross-Validation</h3>
+                    <p>The <code>k_fold_cross_validation</code> function performs k-fold cross-validation, training on different data splits to estimate model performance.</p>
+                    <div class="code-snippet">
+                        def k_fold_cross_validation(images, labels, k=5, epochs=50, learning_rate=0.1):<br>
+                        &nbsp;&nbsp;kf = KFold(n_splits=k, shuffle=True)<br>
+                        &nbsp;&nbsp;for train_idx, val_idx in kf.split(images):<br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;X_train, X_val = images[train_idx], images[val_idx]<br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;y_train, y_val = labels[train_idx], labels[val_idx]<br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;train(X_train, y_train, weights.copy(), biases.copy(), epochs, learning_rate)<br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;accuracy = evaluate(X_val, y_val, weights, biases)
+                    </div>
+
+                    <!-- Final Evaluation -->
+                    <h3>5. Final Evaluation and Results</h3>
+                    <p>Evaluate the model on the test set and plot the training loss over epochs.</p>
+                    <div class="code-snippet">
+                        test_accuracy = evaluate(test_images, test_labels, weights, biases)<br>
+                        print(f"Test Accuracy: {test_accuracy * 100:.2f}%")<br><br>
+                        plt.plot(range(1, 51), losses)<br>
+                        plt.title("Training Loss")<br>
+                        plt.xlabel("Epoch")<br>
+                        plt.ylabel("Loss")<br>
+                        plt.show()
+                    </div>
+                </section>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <footer id="footer">
+            <div class="inner">
+                <section>
+                    <h2>Contacts</h2>
+                    <ul class="icons">
+                        <li><a href="https://github.com/DerinCodes" class="icon brands style2 fa-github" target="_blank"><span class="label">GitHub</span></a></li>
+                        <li><a href="https://www.linkedin.com/in/derin-k-38616010b/" class="icon brands style2 fa-linkedin" target="_blank"><span class="label">LinkedIn</span></a></li>
+                        <li><a href="#" class="icon solid style2 fa-phone"><span class="label">Phone</span></a></li>
+                        <li><a href="#" class="icon solid style2 fa-envelope"><span class="label">Email</span></a></li>
+                    </ul>
+                </section>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Scripts -->
+    <script src="assets/js/jquery.min.js"></script>
+    <script src="assets/js/browser.min.js"></script>
+    <script src="assets/js/breakpoints.min.js"></script>
+    <script src="assets/js/util.js"></script>
+    <script src="assets/js/main.js"></script>
+</body>
+</html>

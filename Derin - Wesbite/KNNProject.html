@@ -1,0 +1,158 @@
+<!DOCTYPE HTML>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <title>Nearest Neighbor Classifier on Diabetes Dataset</title>
+    <link rel="stylesheet" href="assets/css/main.css">
+    <noscript><link rel="stylesheet" href="assets/css/noscript.css"></noscript>
+    <style>
+        /* Custom styling for code blocks */
+        .code-snippet {
+            background-color: #2f3843;
+            border-left: 4px solid #124e65;
+            padding: 5px;
+            margin: 20px 0;
+            font-family: monospace;
+            white-space: pre-wrap;
+            overflow-x: auto;
+            line-height: .75em; /* Reduced line spacing */
+        }
+        h1, h2, h3 {
+            font-family: Arial, sans-serif;
+        }
+    </style>
+</head>
+<body class="is-preload">
+    <!-- Wrapper -->
+    <div id="wrapper">
+        <!-- Header -->
+        <header id="header">
+            <div class="inner">
+                <!-- Logo -->
+                <a href="index.html" class="logo">
+                    <span class="symbol"><img src="images/logo.svg" alt="" /></span><span class="title">DK</span>
+                </a>
+
+                <!-- Nav -->
+                <nav>
+                    <ul>
+                        <li><a href="#menu">Menu</a></li>
+                    </ul>
+                </nav>
+            </div>
+        </header>
+
+        <!-- Menu -->
+        <nav id="menu">
+            <h2>Menu</h2>
+            <ul>
+                <li><a href="index.html">About Me</a></li>
+                <li><a href="generic.html">Projects</a></li>
+                <li><a href="generic.html">Contacts</a></li>
+            </ul>
+        </nav>
+
+        <!-- Main Content -->
+        <div id="main">
+            <div class="inner">
+                <!-- Project Title and Description -->
+                <section>
+                    <h1>Nearest Neighbor Classifier on Diabetes Dataset</h1>
+                    <p>This project uses a custom nearest neighbor classifier to classify individuals as diabetic or non-diabetic based on features from the diabetes dataset. The code standardizes the features and calculates Euclidean distances to classify the data points. The model's performance is evaluated using a classification report.</p>
+                </section>
+
+                <!-- Code Breakdown -->
+                <section>
+                    <h2>Code Breakdown</h2>
+
+                    <!-- Load Dataset -->
+                    <h3>1. Load Dataset</h3>
+                    <p>The diabetes dataset is loaded from a CSV file using <code>pandas</code>, which returns the data in array form.</p>
+                    <div class="code-snippet">
+                        fileName = "~/Desktop/diabetes.csv"<br>
+                        data = pd.read_csv(fileName).values
+                    </div>
+
+                    <!-- Separate Features and Labels -->
+                    <h3>2. Separate Features and Labels</h3>
+                    <p>Features are extracted from all columns except the last, which contains the target labels.</p>
+                    <div class="code-snippet">
+                        features = data[:, :-1]<br>
+                        labels = data[:, -1]
+                    </div>
+
+                    <!-- Split Dataset -->
+                    <h3>3. Split Dataset into Training and Testing Sets</h3>
+                    <p>The dataset is split into training and testing sets using <code>train_test_split</code> from <code>sklearn.model_selection</code>.</p>
+                    <div class="code-snippet">
+                        xTrain, xTest, yTrain, yTest = train_test_split(features, labels, test_size=0.2, random_state=42)
+                    </div>
+
+                    <!-- Feature Standardization -->
+                    <h3>4. Standardize Features</h3>
+                    <p>Standardize the training and testing sets by calculating the mean and standard deviation of the training data and applying them to both sets.</p>
+                    <div class="code-snippet">
+                        mean = np.mean(xTrain, axis=0)<br>
+                        std = np.std(xTrain, axis=0)<br>
+                        xTrainStd = (xTrain - mean) / std<br>
+                        xTestStd = (xTest - mean) / std
+                    </div>
+
+                    <!-- Nearest Neighbor Classifier -->
+                    <h3>5. Implement Nearest Neighbor Classifier</h3>
+                    <p>The <code>nearestNeighbor</code> function calculates Euclidean distances from a test point to each training point, finds the <em>k</em> nearest neighbors, and predicts the label based on the most frequent label among these neighbors.</p>
+                    <div class="code-snippet">
+                        def nearestNeighbor(xTest, k=3):<br>
+                        &nbsp;&nbsp;distance = []<br>
+                        &nbsp;&nbsp;for i in range(len(xTrainStd)):<br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;euclideanDistance = euclideanDistance(xTrainStd[i], xTest)<br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;distance.append((euclideanDistance, yTrain[i]))<br>
+                        &nbsp;&nbsp;distances = sorted(distance)[:k]<br>
+                        &nbsp;&nbsp;counts = np.bincount([label for (_, label) in distances])<br>
+                        &nbsp;&nbsp;return np.argmax(counts)
+                    </div>
+
+                    <!-- Calculate Euclidean Distance -->
+                    <h3>6. Euclidean Distance Calculation</h3>
+                    <p>The <code>euclideanDistance</code> function computes the Euclidean distance between two points.</p>
+                    <div class="code-snippet">
+                        def euclideanDistance(x1, x2):<br>
+                        &nbsp;&nbsp;return np.sqrt(np.sum((x1 - x2)**2))
+                    </div>
+
+                    <!-- Model Evaluation -->
+                    <h3>7. Model Evaluation</h3>
+                    <p>The model's performance is evaluated using <code>classification_report</code> from <code>sklearn.metrics</code>, which provides detailed metrics such as precision, recall, and F1-score.</p>
+                    <div class="code-snippet">
+                        yPred = [nearestNeighbor(xTest, k=3) for xTest in xTestStd]<br>
+                        print(classification_report(yTest, yPred))
+                    </div>
+                </section>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <footer id="footer">
+            <div class="inner">
+                <section>
+                    <h2>Contacts</h2>
+                    <ul class="icons">
+                        <li><a href="https://github.com/DerinCodes" class="icon brands style2 fa-github" target="_blank"><span class="label">GitHub</span></a></li>
+                        <li><a href="https://www.linkedin.com/in/derin-k-38616010b/" class="icon brands style2 fa-linkedin" target="_blank"><span class="label">LinkedIn</span></a></li>
+                        <li><a href="#" class="icon solid style2 fa-phone"><span class="label">Phone</span></a></li>
+                        <li><a href="#" class="icon solid style2 fa-envelope"><span class="label">Email</span></a></li>
+                    </ul>
+                </section>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Scripts -->
+    <script src="assets/js/jquery.min.js"></script>
+    <script src="assets/js/browser.min.js"></script>
+    <script src="assets/js/breakpoints.min.js"></script>
+    <script src="assets/js/util.js"></script>
+    <script src="assets/js/main.js"></script>
+</body>
+</html>

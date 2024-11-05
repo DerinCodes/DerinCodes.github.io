@@ -1,0 +1,185 @@
+<!DOCTYPE HTML>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <title>Naive Bayes SMS Spam Classifier</title>
+    <link rel="stylesheet" href="assets/css/main.css">
+    <noscript><link rel="stylesheet" href="assets/css/noscript.css"></noscript>
+    <style>
+        /* Custom styling for code blocks */
+        .code-snippet {
+            background-color: #2f3843;
+            border-left: 4px solid #124e65;
+            padding: 5px;
+            margin: 20px 0;
+            font-family: monospace;
+            white-space: pre-wrap;
+            overflow-x: auto;
+            line-height: .75em; /* Reduced line spacing */
+        }
+        h1, h2, h3 {
+            font-family: Arial, sans-serif;
+        }
+    </style>
+</head>
+<body class="is-preload">
+    <!-- Wrapper -->
+    <div id="wrapper">
+        <!-- Header -->
+        <header id="header">
+            <div class="inner">
+                <!-- Logo -->
+                <a href="index.html" class="logo">
+                    <span class="symbol"><img src="images/logo.svg" alt="" /></span><span class="title">DK</span>
+                </a>
+
+                <!-- Nav -->
+                <nav>
+                    <ul>
+                        <li><a href="#menu">Menu</a></li>
+                    </ul>
+                </nav>
+            </div>
+        </header>
+
+        <!-- Menu -->
+        <nav id="menu">
+            <h2>Menu</h2>
+            <ul>
+                <li><a href="index.html">About Me</a></li>
+                <li><a href="generic.html">Projects</a></li>
+                <li><a href="generic.html">Contacts</a></li>
+            </ul>
+        </nav>
+
+        <!-- Main Content -->
+        <div id="main">
+            <div class="inner">
+                <!-- Project Title and Description -->
+                <section>
+                    <h1>Naive Bayes SMS Spam Classifier</h1>
+                    <p>This project implements a Naive Bayes classifier to classify SMS messages as either spam or non-spam (ham) based on their content. The classifier is trained and evaluated using cross-validation, with test set accuracy reported at the end.</p>
+                </section>
+
+                <!-- Code Breakdown -->
+                <section>
+                    <h2>Code Breakdown</h2>
+
+                    <!-- Data Loading and Label Conversion -->
+                    <h3>1. Load Data and Convert Labels</h3>
+                    <p>The dataset is loaded from a tab-separated file containing two columns: <em>label</em> (either <code>ham</code> or <code>spam</code>) and <em>message</em> (the SMS text). The labels are converted to binary values (0 for ham and 1 for spam) for easier processing.</p>
+                    <div class="code-snippet">
+                        filePath = "path/to/your/dataset/SMSSpamCollection"<br>
+                        data = pd.read_csv(filePath, sep='\t', header=None, names=['label', 'message'])<br>
+                        data['label'] = data['label'].map({'ham': 0, 'spam': 1})
+                    </div>
+
+                    <!-- Split Dataset -->
+                    <h3>2. Split Dataset</h3>
+                    <p>The dataset is split into training and testing sets using <code>train_test_split</code> from <code>sklearn.model_selection</code>. The split ratio is set to 80/20, and the random state ensures reproducibility.</p>
+                    <div class="code-snippet">
+                        messages = data['message'].values<br>
+                        labels = data['label'].values<br>
+                        messagesTrain, messagesTest, labelsTrain, labelsTest = train_test_split(messages, labels, test_size=0.2, random_state=42)
+                    </div>
+
+                    <!-- Naive Bayes Classifier Training -->
+                    <h3>3. Naive Bayes Classifier</h3>
+                    <p>The <code>fit</code> function calculates class probabilities (spam and ham) and word probabilities within each class. Each word's probability is based on its frequency in messages labeled with that class.</p>
+                    <div class="code-snippet">
+                        def fit(trainMessages, trainLabels):<br>
+                        &nbsp;&nbsp;classProbs = {label: np.mean(trainLabels == label) for label in np.unique(trainLabels)}<br>
+                        &nbsp;&nbsp;wordProbs = {}<br>
+                        &nbsp;&nbsp;for label in np.unique(trainLabels):<br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;index = np.where(trainLabels == label)[0]<br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;messages = trainMessages[index]<br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;words = ' '.join(messages).split()<br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;wordCounts = {word: words.count(word) for word in set(words)}<br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;totalWords = sum(wordCounts.values())<br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;wordProbs[label] = {word: count / totalWords for word, count in wordCounts.items()}<br>
+                        &nbsp;&nbsp;return classProbs, wordProbs
+                    </div>
+
+                    <!-- Prediction Function -->
+                    <h3>4. Prediction Function</h3>
+                    <p>The <code>predict</code> function calculates the probability of each message being spam or ham, based on the presence of words and their conditional probabilities for each class. It classifies each message as the class with the higher probability.</p>
+                    <div class="code-snippet">
+                        def predict(testMessages, classProbs, wordProbs):<br>
+                        &nbsp;&nbsp;predictions = []<br>
+                        &nbsp;&nbsp;for message in testMessages:<br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;spamProbability = classProbs[1]<br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;hamProbability = classProbs[0]<br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;for word in message.split():<br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if word in wordProbs[1]:<br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;spamProbability *= wordProbs[1][word]<br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if word in wordProbs[0]:<br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;hamProbability *= wordProbs[0][word]<br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;if spamProbability > hamProbability:<br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;predictions.append(1)  # Spam<br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;else:<br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;predictions.append(0)  # Ham<br>
+                        &nbsp;&nbsp;return np.array(predictions)
+                    </div>
+
+                    <!-- Cross-Validation -->
+                    <h3>5. Cross-Validation</h3>
+                    <p>The <code>crossValidation</code> function performs k-fold cross-validation, training the model on different folds and measuring accuracy on validation folds. The average accuracy across folds is calculated for a more robust performance estimate.</p>
+                    <div class="code-snippet">
+                        def crossValidation(trainMessages, trainLabels, nFolds=5):<br>
+                        &nbsp;&nbsp;foldSize = len(trainMessages) // nFolds<br>
+                        &nbsp;&nbsp;accuracies = []<br>
+                        &nbsp;&nbsp;for i in range(nFolds):<br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;start = i * foldSize<br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;end = (i + 1) * foldSize<br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;validMessages = trainMessages[start:end]<br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;validLabels = trainLabels[start:end]<br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;trainingMessages = np.concatenate([trainMessages[:start], trainMessages[end:]])<br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;trainingLabels = np.concatenate([trainLabels[:start], trainLabels[end:]])<br><br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;classProbs, wordProbs = fit(trainingMessages, trainingLabels)<br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;predictions = predict(validMessages, classProbs, wordProbs)<br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;accuracy = np.mean(predictions == validLabels)<br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;accuracies.append(accuracy)<br>
+                        &nbsp;&nbsp;return accuracies
+                    </div>
+
+                    <!-- Training and Evaluation -->
+                    <h3>6. Training and Evaluation</h3>
+                    <p>The model is trained using the <code>fit</code> function, and cross-validation accuracies are displayed. The model is then evaluated on the test set, and the final accuracy is reported.</p>
+                    <div class="code-snippet">
+                        accuracies = crossValidation(messagesTrain, labelsTrain)<br>
+                        print("Cross-validation accuracies:", accuracies)<br>
+                        print("Mean CV accuracy:", np.mean(accuracies))<br><br>
+                        classProbs, wordProbs = fit(messagesTrain, labelsTrain)<br>
+                        predictions = predict(messagesTest, classProbs, wordProbs)<br>
+                        accuracy = np.mean(predictions == labelsTest)<br>
+                        print("\\nTest set accuracy:", accuracy)
+                    </div>
+                </section>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <footer id="footer">
+            <div class="inner">
+                <section>
+                    <h2>Contacts</h2>
+                    <ul class="icons">
+                        <li><a href="https://github.com/DerinCodes" class="icon brands style2 fa-github" target="_blank"><span class="label">GitHub</span></a></li>
+                        <li><a href="https://www.linkedin.com/in/derin-k-38616010b/" class="icon brands style2 fa-linkedin" target="_blank"><span class="label">LinkedIn</span></a></li>
+                        <li><a href="#" class="icon solid style2 fa-phone"><span class="label">Phone</span></a></li>
+                        <li><a href="#" class="icon solid style2 fa-envelope"><span class="label">Email</span></a></li>
+                    </ul>
+                </section>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Scripts -->
+    <script src="assets/js/jquery.min.js"></script>
+    <script src="assets/js/browser.min.js"></script>
+    <script src="assets/js/breakpoints.min.js"></script>
+    <script src="assets/js/util.js"></script>
+    <script src="assets/js/main.js"></script>
+</body>
+</html>
