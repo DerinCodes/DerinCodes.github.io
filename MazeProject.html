@@ -16,7 +16,7 @@
             font-family: monospace;
             white-space: pre-wrap;
             overflow-x: auto;
-            line-height: 1.5em;
+            line-height: 0.5em; /* Reduced line spacing */
             color: #f8f8f2;
         }
         h1, h2, h3 {
@@ -71,12 +71,15 @@
                     <p><strong>Pros:</strong> Simple, efficient for dense mazes.<br>
                        <strong>Cons:</strong> Few junctions, often produces dead ends.</p>
                     <div class="code-snippet">
-                        // Start DFS from a random cell<br>
-                        DFS(start) {<br>
-                        &nbsp;&nbsp;mark cell as visited;<br>
-                        &nbsp;&nbsp;for each neighbor in random order:<br>
-                        &nbsp;&nbsp;&nbsp;&nbsp;if neighbor not visited:<br>
+                        void DFS(Vector2Int cell) {<br>
+                        &nbsp;&nbsp;visited[cell.x, cell.y] = true;<br>
+                        &nbsp;&nbsp;foreach (Vector2Int dir in directions) {<br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;Vector2Int neighbor = cell + dir;<br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;if (IsValidMove(neighbor)) {<br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;RemoveWall(cell, neighbor);<br>
                         &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;DFS(neighbor);<br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;}<br>
+                        &nbsp;&nbsp;}<br>
                         }
                     </div>
 
@@ -86,14 +89,14 @@
                     <p><strong>Pros:</strong> Great balance of short and long paths.<br>
                        <strong>Cons:</strong> Can produce predictable structures with short dead ends.</p>
                     <div class="code-snippet">
-                        // Initialize with a random start cell<br>
-                        Prim(start) {<br>
-                        &nbsp;&nbsp;mark cell as "in maze";<br>
-                        &nbsp;&nbsp;add all neighboring cells to frontier;<br>
-                        &nbsp;&nbsp;while frontier not empty:<br>
-                        &nbsp;&nbsp;&nbsp;&nbsp;pick random frontier cell;<br>
-                        &nbsp;&nbsp;&nbsp;&nbsp;connect to random "in maze" neighbor;<br>
-                        &nbsp;&nbsp;&nbsp;&nbsp;mark cell, add neighbors to frontier;<br>
+                        void GenerateMaze() {<br>
+                        &nbsp;&nbsp;MarkInMaze(start);<br>
+                        &nbsp;&nbsp;while (!frontier.isEmpty()) {<br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;Vector2Int cell = GetRandomFrontierCell();<br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;Vector2Int neighbor = GetRandomInNeighbor(cell);<br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;RemoveWall(cell, neighbor);<br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;MarkInMaze(cell);<br>
+                        &nbsp;&nbsp;}<br>
                         }
                     </div>
 
@@ -103,12 +106,14 @@
                     <p><strong>Pros:</strong> Generates highly connected mazes with diverse paths.<br>
                        <strong>Cons:</strong> Memory-intensive for large grids.</p>
                     <div class="code-snippet">
-                        // Randomly join sets by removing walls<br>
-                        Kruskal() {<br>
-                        &nbsp;&nbsp;initialize each cell as its own set;<br>
-                        &nbsp;&nbsp;for each random wall between cells:<br>
-                        &nbsp;&nbsp;&nbsp;&nbsp;if cells are in different sets:<br>
-                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;remove wall, merge sets;<br>
+                        void KruskalsMaze() {<br>
+                        &nbsp;&nbsp;initializeSets();<br>
+                        &nbsp;&nbsp;foreach (Wall wall in shuffledWalls) {<br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;if (ConnectsDisjointSets(wall)) {<br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;RemoveWall(wall);<br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;UnionSets(wall.cellA, wall.cellB);<br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;}<br>
+                        &nbsp;&nbsp;}<br>
                         }
                     </div>
 
@@ -118,12 +123,14 @@
                     <p><strong>Pros:</strong> Visually unique mazes with large open spaces.<br>
                        <strong>Cons:</strong> Can produce isolated areas if not careful.</p>
                     <div class="code-snippet">
-                        // Recursively divide the grid<br>
-                        Divide(x, y, width, height) {<br>
-                        &nbsp;&nbsp;if area too small return;<br>
-                        &nbsp;&nbsp;place wall across width or height;<br>
-                        &nbsp;&nbsp;create random opening in wall;<br>
-                        &nbsp;&nbsp;recursively divide each section;<br>
+                        void Divide(int x, int y, int width, int height) {<br>
+                        &nbsp;&nbsp;if (width <= 2 || height <= 2) return;<br>
+                        &nbsp;&nbsp;bool horizontal = width < height;<br>
+                        &nbsp;&nbsp;int wallX = x + (horizontal ? 0 : RandomRange(1, width-2));<br>
+                        &nbsp;&nbsp;int wallY = y + (horizontal ? RandomRange(1, height-2) : 0);<br>
+                        &nbsp;&nbsp;PlaceWall(wallX, wallY, horizontal);<br>
+                        &nbsp;&nbsp;Divide(x, y, wallX - x, wallY - y);<br>
+                        &nbsp;&nbsp;Divide(wallX + 1, wallY + 1, width - wallX, height - wallY);<br>
                         }
                     </div>
                 </section>
