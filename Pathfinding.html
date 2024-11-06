@@ -1,0 +1,212 @@
+<!DOCTYPE HTML>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <title>Image Compression using K-Means Clustering</title>
+    <link rel="stylesheet" href="assets/css/main.css">
+    <noscript><link rel="stylesheet" href="assets/css/noscript.css"></noscript>
+    <style>
+        /* Custom styling for code blocks */
+        .code-snippet {
+            background-color: #2f3843;
+            border-left: 4px solid #124e65;
+            padding: 5px;
+            margin: 20px 0;
+            font-family: monospace;
+            white-space: pre-wrap;
+            overflow-x: auto;
+            line-height: .75em; /* Reduced line spacing */
+        }
+        h1, h2, h3 {
+            font-family: Arial, sans-serif;
+        }
+        .image-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 20px;
+        }
+        .image-item {
+            text-align: center;
+            width: 45%;
+        }
+        .image-item img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+        }
+    </style>
+</head>
+<body class="is-preload">
+    <!-- Wrapper -->
+    <div id="wrapper">
+        <!-- Header -->
+        <header id="header">
+            <div class="inner">
+                <!-- Logo -->
+                <a href="index.html" class="logo">
+                    <span class="symbol"><img src="images/logo.svg" alt="" /></span><span class="title">DK</span>
+                </a>
+
+                <!-- Nav -->
+                <nav>
+                    <ul>
+                        <li><a href="#menu">Menu</a></li>
+                    </ul>
+                </nav>
+            </div>
+        </header>
+
+        <!-- Menu -->
+        <nav id="menu">
+            <h2>Menu</h2>
+            <ul>
+                <li><a href="index.html">About Me</a></li>
+                <li><a href="generic.html">Projects</a></li>
+                <li><a href="generic.html">Contacts</a></li>
+            </ul>
+        </nav>
+
+        <!-- Main Content -->
+        <div id="main">
+            <div class="inner">
+                <!-- Project Title and Description -->
+                <section>
+                    <h1>Image Compression using K-Means Clustering</h1>
+                    <p>This project compresses an image by reducing its colors using the K-Means clustering algorithm.</p>
+                </section>
+
+                <!-- Pathfinding Algorithms Section -->
+                <section>
+                    <h2>Pathfinding Algorithms Explained</h2>
+
+                    <!-- Breadth-First Search (BFS) -->
+                    <h3>1. Breadth-First Search (BFS)</h3>
+                    <p><strong>Description:</strong> BFS explores each node level by level, ideal for finding the shortest path in an unweighted maze.</p>
+                    <div class="code-snippet">
+                        Queue<Vector3Int> queue = new Queue<Vector3Int>();
+                        queue.Enqueue(start);
+                        while (queue.Count > 0) {
+                            Vector3Int current = queue.Dequeue();
+                            foreach (Vector3Int neighbor in GetNeighbors(current)) {
+                                if (neighbor == end) { yield break; }
+                                queue.Enqueue(neighbor);
+                            }
+                        }
+                    </div>
+                    <ul>
+                        <li><strong>Pros:</strong> Guarantees shortest path in an unweighted graph.</li>
+                        <li><strong>Cons:</strong> Can be slow and memory-intensive in large grids.</li>
+                    </ul>
+
+                    <!-- Depth-First Search (DFS) -->
+                    <h3>2. Depth-First Search (DFS)</h3>
+                    <p><strong>Description:</strong> DFS explores as deeply as possible along a branch before backtracking.</p>
+                    <div class="code-snippet">
+                        Stack<Vector3Int> stack = new Stack<Vector3Int>();
+                        stack.Push(start);
+                        while (stack.Count > 0) {
+                            Vector3Int current = stack.Pop();
+                            foreach (Vector3Int neighbor in GetNeighbors(current)) {
+                                if (neighbor == end) { yield break; }
+                                stack.Push(neighbor);
+                            }
+                        }
+                    </div>
+                    <ul>
+                        <li><strong>Pros:</strong> Good for exploring entire areas.</li>
+                        <li><strong>Cons:</strong> Does not guarantee the shortest path.</li>
+                    </ul>
+
+                    <!-- Dijkstra's Algorithm -->
+                    <h3>3. Dijkstra's Algorithm</h3>
+                    <p><strong>Description:</strong> Dijkstra’s algorithm finds the shortest path from start to end in a weighted graph, using a priority queue to expand the lowest-cost node.</p>
+                    <div class="code-snippet">
+                        SortedDictionary<int, List<Vector3Int>> queue = new SortedDictionary<int, List<Vector3Int>>();
+                        queue.Add(0, new List<Vector3Int> { start });
+                        while (queue.Count > 0) {
+                            Vector3Int current = queue[currentCost][0];
+                            if (current == end) { yield break; }
+                            foreach (Vector3Int neighbor in GetNeighbors(current)) {
+                                int newCost = currentCost + 1;
+                                queue.Add(newCost, neighbor);
+                            }
+                        }
+                    </div>
+                    <ul>
+                        <li><strong>Pros:</strong> Guarantees the shortest path in weighted graphs.</li>
+                        <li><strong>Cons:</strong> Can be slow for large grids; more complex implementation.</li>
+                    </ul>
+
+                    <!-- A* Algorithm -->
+                    <h3>4. A* (A-Star) Algorithm</h3>
+                    <p><strong>Description:</strong> A* combines Dijkstra’s path cost with a heuristic for more efficient pathfinding, prioritizing nodes closer to the goal.</p>
+                    <div class="code-snippet">
+                        SortedDictionary<int, List<Vector3Int>> queue = new SortedDictionary<int, List<Vector3Int>>();
+                        queue.Add(GetHeuristic(start), new List<Vector3Int> { start });
+                        while (queue.Count > 0) {
+                            Vector3Int current = queue[currentCost][0];
+                            if (current == end) { yield break; }
+                            foreach (Vector3Int neighbor in GetNeighbors(current)) {
+                                int tentativeCost = gCosts[current] + 1;
+                                int fCost = tentativeCost + GetHeuristic(neighbor);
+                                queue.Add(fCost, neighbor);
+                            }
+                        }
+                    </div>
+                    <ul>
+                        <li><strong>Pros:</strong> More efficient than Dijkstra’s for many pathfinding tasks; guarantees shortest path.</li>
+                        <li><strong>Cons:</strong> Requires a good heuristic for best performance.</li>
+                    </ul>
+                </section>
+
+                <!-- WebGL Box for Unity Scene -->
+                <section>
+                    <h2>Pathfinding Visualization in Unity</h2>
+                    <p>Below is an embedded WebGL scene for visualizing the pathfinding algorithms in action.</p>
+                    <div style="text-align: center;">
+                        <iframe src="Build/index.html" width="800" height="600"></iframe>
+                    </div>
+                </section>
+
+                <!-- Before and After Images -->
+                <section>
+                    <div class="image-container">
+                        <div class="image-item">
+                            <h3>Before</h3>
+                            <img src="images/before.png" alt="Original Image">
+                        </div>
+                        <div class="image-item">
+                            <h3>After</h3>
+                            <img src="images/after.png" alt="Compressed Image">
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <footer id="footer">
+            <div class="inner">
+                <section>
+                    <h2>Contacts</h2>
+                    <ul class="icons">
+                        <li><a href="https://github.com/DerinCodes" class="icon brands style2 fa-github" target="_blank"><span class="label">GitHub</span></a></li>
+                        <li><a href="https://www.linkedin.com/in/derin-k-38616010b/" class="icon brands style2 fa-linkedin" target="_blank"><span class="label">LinkedIn</span></a></li>
+                        <li><a href="#" class="icon solid style2 fa-phone"><span class="label">Phone</span></a></li>
+                        <li><a href="#" class="icon solid style2 fa-envelope"><span class="label">Email</span></a></li>
+                    </ul>
+                </section>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Scripts -->
+    <script src="assets/js/jquery.min.js"></script>
+    <script src="assets/js/browser.min.js"></script>
+    <script src="assets/js/breakpoints.min.js"></script>
+    <script src="assets/js/util.js"></script>
+    <script src="assets/js/main.js"></script>
+</body>
+</html>
